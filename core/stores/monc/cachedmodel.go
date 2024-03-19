@@ -91,6 +91,25 @@ func (mm *Model) DeleteOne(ctx context.Context, key string, filter any,
 	return val, nil
 }
 
+func (mm *Model) DeleteMany(ctx context.Context, key []string, filter any, opts ...*mopt.DeleteOptions) (int64, error) {
+	val, err := mm.Model.DeleteMany(ctx, filter, opts...)
+	if err != nil {
+		return 0, err
+	}
+	if err := mm.DelCache(ctx, key...); err != nil {
+		return 0, err
+	}
+	return val, nil
+}
+
+func (mm *Model) DeleteManyNoCache(ctx context.Context, filter any, opts ...*mopt.DeleteOptions) (int64, error) {
+	val, err := mm.Model.DeleteMany(ctx, filter, opts...)
+	if err != nil {
+		return 0, err
+	}
+	return val, nil
+}
+
 // DeleteOneNoCache deletes the document with given filter.
 func (mm *Model) DeleteOneNoCache(ctx context.Context, filter any,
 	opts ...*mopt.DeleteOptions) (int64, error) {
